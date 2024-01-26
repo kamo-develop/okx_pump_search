@@ -5,7 +5,7 @@ from pprint import pprint
 from pyrogram import Client
 
 from api_client import ClientAPI
-from settings import tg_api_id, tg_api_hash, tg_log_channel_id
+from settings import tg_log_channel_id
 
 logging.basicConfig(
     level=logging.INFO,

@@ -12,8 +12,6 @@ okx_api_secret = config['okx']['api_secret']
 okx_api_passphrase = config['okx']['api_passphrase']
 okx_url_trade = config['okx']['okx_url_trade']
 
-tg_api_id = int(config['Telegram']['tg_api_id'])
-tg_api_hash = config['Telegram']['tg_api_hash']
 tg_session_name = config['Telegram']['tg_session_name']
 tg_signal_channel_id = int(config['Telegram']['tg_signal_channel_id'])
 tg_log_channel_id = int(config['Telegram']['tg_log_channel_id'])
