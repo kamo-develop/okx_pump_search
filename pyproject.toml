@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "okx-pump-search"
+version = "0.1.0"
+description = ""
+authors = ["Kamo develop <kamodeveloper@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+python-okx = "^0.2.6"
+autobahn = "^23.6.2"
+service-identity = "^23.1.0"
+pyrogram = "^2.0.106"
+aiohttp = "^3.9.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
