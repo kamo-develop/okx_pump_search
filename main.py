@@ -53,7 +53,7 @@ async def run(tg_manager: TelegramManager, pump_scanner: PumpScanner, trading_ma
             if count_iteration % 3000 == 0:
                 logger.info("HOUR SLICE")
                 pump_scanner.print_counts_to_log()
-                pump_scanner.count_top_hits.send_to_tg(tg_manager)
+                # pump_scanner.count_top_hits.send_to_tg(tg_manager)
             # elif count_iteration % 60 == 0:
             #     pump_scanner.print_counts_to_log(10)
             await asyncio.sleep(0.25)

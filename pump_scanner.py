@@ -58,7 +58,7 @@ class PumpScanner:
             last_candle: Candle = candles[-1]
             activity[instrument_name] = (last_candle.close / last_candle.open - 1) * 100
 
-            if activity[instrument_name] > activity_level:
+            if abs(activity[instrument_name]) > activity_level:
                 self.count_pumps.add_value(instrument_name, activity[instrument_name])
                 pump_list.append(instrument_name)
 

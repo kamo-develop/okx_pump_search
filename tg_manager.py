@@ -38,7 +38,7 @@ class TelegramManager:
 
     def on_new_pump(self, instrument_name, pump_force, average_force, count_forces, is_margin: bool):
         currency_name = instrument_name.split('-')[0]
-        text = (f"❗️PUMP\n`{currency_name}`\n"
+        text = (f"❗ {'UP ↗️' if pump_force > 0 else 'DOWN ↘️'}\n`{currency_name}`\n"
                 f"{'🛑**MARGIN!**' if is_margin else 'SPOT'}\n\n"
                 f"{okx_url_trade}/{instrument_name.lower()}\n"
                 f"{round(pump_force, 2)}%\n"
