@@ -1,5 +1,6 @@
 import logging
 import time
+from collections import deque
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,7 @@ class Candle:
             self.high = new_price
         if new_price < self.low:
             self.low = new_price
+
 class CandlesManager:
     def __init__(self, period):
         self.candles = dict()
@@ -25,12 +27,17 @@ class CandlesManager:
     def new_price(self, instrument_name, price):
         current_time = int(time.time())
         if instrument_name not in self.candles:
-            self.candles[instrument_name] = list()
-        if len(self.candles[instrument_name]) == 0:
+            self.candles[instrument_name] = deque()
             self.candles[instrument_name].append(Candle(price))
+        self._clear_old_candles(instrument_name)
         if current_time - self.candles[instrument_name][-1].time > self.period:
             self.candles[instrument_name].append(Candle(price))
         self.candles[instrument_name][-1].update_close_price(price)
+
+    def _clear_old_candles(self, instrument_name):
+        if len(self.candles[instrument_name]) > 100:
+            while len(self.candles[instrument_name]) > 60:
+                self.candles[instrument_name].popleft()
 
     def get_last_candle(self, instrument_name) -> Candle:
         return self.candles[instrument_name][-1]
