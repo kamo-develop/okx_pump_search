@@ -51,7 +51,7 @@ class PumpScanner:
         self.count_top_hits = Counter()
         self.count_pumps = Counter()
 
-    def calc_activity(self, candles_manager: CandlesManager, signal_manager: SignalManager):
+    async def calc_activity(self, candles_manager: CandlesManager, signal_manager: SignalManager):
         activity = dict()
         pump_list = list()
         for instrument_name, candles in candles_manager.candles.items():
@@ -72,9 +72,10 @@ class PumpScanner:
                                                                 'average': 0,
                                                                 'count': 0,
                                                             })
-            signal_manager.new_pump(instrument_name, activity.get(instrument_name, 0),
-                                    instrument_stat['average'],
-                                    instrument_stat['count'])
+            await signal_manager.new_pump(
+                instrument_name, activity.get(instrument_name, 0),
+                instrument_stat['average'], instrument_stat['count'],
+                candles_manager)
         return sorted_activity
 
     def print_counts_to_log(self, count_items=None):

@@ -1,6 +1,6 @@
 from okx.consts import *
 
-from request_client import RequestClient
+from okx_api.request_client import RequestClient
 from settings import okx_api_key, okx_api_secret, okx_api_passphrase
 
 
@@ -16,7 +16,7 @@ class ClientAPI(RequestClient):
     # Get Instruments
     async def get_instruments(self, instType, uly='', instId='', instFamily=''):
         params = {'instType': instType, 'uly': uly, 'instId': instId, 'instFamily': instFamily}
-        return  await self._request(GET, INSTRUMENT_INFO, params)
+        return await self._request(GET, INSTRUMENT_INFO, params)
 
     async def get_balances(self, ccy=''):
         params = {'ccy': ccy}
@@ -42,4 +42,19 @@ class ClientAPI(RequestClient):
     async def cancel_order(self, instId, ordId='', clOrdId=''):
         params = {'instId': instId, 'ordId': ordId, 'clOrdId': clOrdId}
         return await self._request(POST, CANCEL_ORDER, params)
+
+    # Amend Order
+    async def amend_order(self, instId, cxlOnFail='', ordId='', clOrdId='', reqId='', newSz='', newPx='',
+                    newTpTriggerPx='', newTpOrdPx='', newSlTriggerPx='', newSlOrdPx='', newTpTriggerPxType='', newSlTriggerPxType=''):
+        params = {'instId': instId, 'cxlOnFailc': cxlOnFail, 'ordId': ordId, 'clOrdId': clOrdId, 'reqId': reqId,
+                  'newSz': newSz, 'newPx': newPx, 'newTpTriggerPx': newTpTriggerPx, 'newTpOrdPx': newTpOrdPx,
+                  'newSlTriggerPx': newSlTriggerPx, 'newSlOrdPx': newSlOrdPx,
+                  'newTpTriggerPxType': newTpTriggerPxType,
+                  'newSlTriggerPxType': newSlTriggerPxType}
+        return await self._request(POST, AMEND_ORDER, params)
+
+    # Get Order Details
+    async def get_order(self, instId, ordId='', clOrdId=''):
+        params = {'instId': instId, 'ordId': ordId, 'clOrdId': clOrdId}
+        return await self._request(GET, ORDER_INFO, params)
 

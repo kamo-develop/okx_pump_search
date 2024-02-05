@@ -1,11 +1,12 @@
 import asyncio
 import logging
+import os
 from pprint import pprint
 
 from pyrogram import Client
 
-from api_client import ClientAPI
-from settings import tg_log_channel_id
+from okx_api.api_client import ClientAPI
+from settings import tg_log_channel_id, okx_api_key, enable_trading
 
 logging.basicConfig(
     level=logging.INFO,
@@ -38,6 +39,15 @@ async def test_tg():
     async with tg_app:
         await tg_app.send_message(tg_log_channel_id, "HI")
 
-asyncio.run(test_tg())
+def test_dotenv():
+    print(type(enable_trading))
+    print(enable_trading)
 
+
+def test_list():
+    ls = [1, 2, 3, 4, 5]
+    for i in range(1, len(ls) - 1):
+        print(f"{ls[-i]}  {ls[-i-1]}  {ls[-i-2]}" )
+
+test_dotenv()
 

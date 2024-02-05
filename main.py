@@ -1,16 +1,14 @@
 import asyncio
 import logging
-import time
 from logging.handlers import RotatingFileHandler
-from pprint import pprint
-from okx import Funding, PublicData, MarketData
 
-from api_client import ClientAPI
+from okx_api.api_client import ClientAPI
 from candles_manager import CandlesManager
 from pump_scanner import PumpScanner
-from settings import okx_api_key, okx_api_secret, okx_api_passphrase, activity_level, okx_url_trade
+from settings import activity_level, okx_url_trade
 from signals import SignalManager
 from tg_manager import TelegramManager
+from trading.trading_manager import TradingManager
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +31,9 @@ def print_activity_to_log(sorted_activity, candles_manager: CandlesManager):
             break
 
 
-async def run(tg_manager: TelegramManager, pump_scanner: PumpScanner, client_api: ClientAPI, margin_instruments: set):
+async def run(tg_manager: TelegramManager, pump_scanner: PumpScanner, trading_manager: TradingManager, client_api: ClientAPI, margin_instruments: set):
     candles_60_sec_manager = CandlesManager(60)
-    signal_manager = SignalManager(tg_manager, margin_instruments)
+    signal_manager = SignalManager(tg_manager, margin_instruments, trading_manager)
     count_iteration = 0
     while True:
         try:
@@ -47,17 +45,18 @@ async def run(tg_manager: TelegramManager, pump_scanner: PumpScanner, client_api
                 if 'USDT' == quote_name:
                     last_price = float(one_ticker['last'])
                     candles_60_sec_manager.new_price(instrument_name, last_price)
+                    await trading_manager.on_new_price(instrument_name, last_price)
 
-            activity_60_sec = pump_scanner.calc_activity(candles_60_sec_manager, signal_manager)
-            print_activity_to_log(activity_60_sec, candles_60_sec_manager)
+            activity_60_sec = await pump_scanner.calc_activity(candles_60_sec_manager, signal_manager)
+            # print_activity_to_log(activity_60_sec, candles_60_sec_manager)
             count_iteration += 1
             if count_iteration % 3000 == 0:
                 logger.info("HOUR SLICE")
                 pump_scanner.print_counts_to_log()
                 pump_scanner.count_top_hits.send_to_tg(tg_manager)
-            elif count_iteration % 60 == 0:
-                pump_scanner.print_counts_to_log(10)
-            await asyncio.sleep(1)
+            # elif count_iteration % 60 == 0:
+            #     pump_scanner.print_counts_to_log(10)
+            await asyncio.sleep(0.25)
         except Exception:
             logger.exception("Not processed Exception")
 
@@ -75,9 +74,10 @@ async def get_margin_instrument_set(client_api: ClientAPI):
 async def main(tg_manager: TelegramManager):
     client_api = ClientAPI()
     pump_scanner = PumpScanner()
+    trading_manager = TradingManager(client_api)
     margin_instruments = await get_margin_instrument_set(client_api)
     task_tg = asyncio.create_task(tg_manager.run())
-    task_scanner = asyncio.create_task(run(tg_manager, pump_scanner, client_api, margin_instruments))
+    task_scanner = asyncio.create_task(run(tg_manager, pump_scanner, trading_manager, client_api, margin_instruments))
 
     await task_tg
     await task_scanner
